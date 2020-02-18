@@ -41,6 +41,39 @@ def createPoseMarker(position=np.array([0,0,0]),
                        parentLinkIndex=parentLinkIndex,
                        physicsClientId=physicsClientId)
 
+
+def createTriad(position=np.array([0,0,0]),
+                     orientation=np.array([0,0,0,1]),
+                     lineLength=0.05,
+                     lineWidth=0.005,
+                     physicsClientId=0):
+    '''Create a pose marker that identifies a position and orientation in space with 3 colored lines.
+    '''
+
+    rgbaColors = [[1.0,0,0,1.0], [0,1.0,0,0.5], [0,0,1.0,0.3]]
+    rotations = [[0, 0.7071068, 0, 0.7071068], [0.7071068, 0, 0, 0.7071068], [0, 0, 0, 1]]
+    pos_offsets = [[lineLength/2,0,0],[0,lineLength/2,0],[0,0,lineLength/2]]
+
+
+    # x_visual = p.createVisualShape(shapeType=p.GEOM_CAPSULE, radius=lineWidth, length=lineLength, rgbaColor=rgbaColors[0], visualFramePosition=pos_offsets[0], visualFrameOrientation=rotations[0])
+    # y_visual = p.createVisualShape(shapeType=p.GEOM_CAPSULE, radius=lineWidth, length=lineLength, rgbaColor=rgbaColors[1], visualFramePosition=pos_offsets[1], visualFrameOrientation=rotations[1])
+    # z_visual = p.createVisualShape(shapeType=p.GEOM_CAPSULE, radius=lineWidth, length=lineLength, rgbaColor=rgbaColors[2], visualFramePosition=pos_offsets[2], visualFrameOrientation=rotations[2])
+
+
+    # triad_id = p.createMultiBody(basePosition=position, baseOrientation=orientation, linkVisualShapeIndices=[x_visual, y_visual, z_visual])
+
+    visualShapeId = p.createVisualShapeArray(shapeTypes=[p.GEOM_CAPSULE,p.GEOM_CAPSULE,p.GEOM_CAPSULE],
+            radii=[lineWidth,lineWidth,lineWidth], lengths=[lineLength,lineLength,lineLength],
+            rgbaColors=rgbaColors, visualFramePositions=pos_offsets, visualFrameOrientations=rotations)
+
+
+    triad_id = p.createMultiBody(baseMass=0, baseCollisionShapeIndex=-1, baseVisualShapeIndex=visualShapeId, basePosition=position, baseOrientation=orientation)
+
+    return triad_id
+
+def moveTriad(triad_id, position=np.array([0,0,0]), orientation=np.array([1,0,0,0])):
+    p.resetBasePositionAndOrientation(triad_id, position, orientation)
+
 def accurateIK(bodyId, endEffectorId, targetPosition, targetOrientation, lowerLimits, upperLimits, jointRanges, restPoses, 
                useNullSpace=False, maxIter=10, threshold=1e-4):
     """
