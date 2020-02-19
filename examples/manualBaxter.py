@@ -63,7 +63,7 @@ for rollout in range(10):
 
         # Set joint action to be the error between current and target joint positions
         joint_action = (target_joint_positions - joint_positions)
-        joint_action = joint_action / np.linalg.norm(joint_action) * 20
+        joint_action = joint_action / np.linalg.norm(joint_action) * 3
         #print(delta_tool_goal)
 
         observation, reward, done, info = env.step(joint_action)
