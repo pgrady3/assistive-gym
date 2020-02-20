@@ -51,6 +51,11 @@ while True:
     target_quaternion = p.getQuaternionFromEuler(target_euler)
     dist_to_goal = np.linalg.norm(target_pos - x)
 
+
+    keys = p.getKeyboardEvents()
+    if ord('z') in keys and keys[ord('z')]&p.KEY_WAS_TRIGGERED:
+        print("[{:.3f},{:.3f},{:.3f}], [{:.3f},{:.3f},{:.3f}]".format(target_x, target_y, target_z, target_roll, target_pitch, target_yaw))
+
     #createPoseMarker(target_pos, target_quaternion, lifeTime=0.1)
     moveTriad(triad_id, target_pos, target_quaternion)
     
