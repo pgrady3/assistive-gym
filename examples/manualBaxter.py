@@ -21,7 +21,7 @@ for rollout in range(10):
     waypoints = []
     #waypoints.append(Waypoint([0, -0.5, -0.3], [0, np.pi/2, 0])) # Waypoints are relative to goal position
     waypoints.append(Waypoint([-0.05, -0.25, -0.1], [np.pi/2, 0, np.pi/2]))
-    waypoints.append(Waypoint([0, -0.15, -0.1], [0, 0, np.pi/2]))
+    waypoints.append(Waypoint([0, -0.15, 0.03], [np.pi/5, 0, np.pi/2]))
 
     wpt_idx = 0
 
@@ -46,7 +46,8 @@ for rollout in range(10):
         target_pos = goal_pos + wpt_x
         #print(goal_pos, target_pos)
         #createPoseMarker(target_pos, wpt_theta, lifeTime=0.5)
-        #createPoseMarker(goal_pos, wpt_theta, lifeTime=0.5)
+        #createPoseMarker(x, theta, lifeTime=0.5)
+        # print(x,' ',p.getEulerFromQuaternion(theta))
         
         dist_to_goal = np.linalg.norm(target_pos - x)
 
@@ -63,7 +64,7 @@ for rollout in range(10):
 
         # Set joint action to be the error between current and target joint positions
         joint_action = (target_joint_positions - joint_positions)
-        joint_action = joint_action / np.linalg.norm(joint_action) * 3
+        joint_action = joint_action / np.linalg.norm(joint_action) * 20
         #print(delta_tool_goal)
 
         observation, reward, done, info = env.step(joint_action)
