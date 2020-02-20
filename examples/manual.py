@@ -9,8 +9,27 @@ class Waypoint:
         self.x = np.array(x)
         self.theta = p.getQuaternionFromEuler(np.array(theta))
 
-env = gym.make('DrinkingJaco-v0')
-env.render()
+def ParseArgs():
+    parser = argparse.ArgumentParser(description='Manual waypoint follower')
+    parser.add_argument('--file', help='Waypoint file')
+    parser.add_argument('--env', default='DrinkingJaco-v0', help='Environment, eg DrinkingJaco-v0')
+    parser.add_argument('--nogui', action='store_true', help='Environment, eg DrinkingJaco-v0')
+    args = parser.parse_args()
+
+    waypoints = []
+
+    with open(args.file) as file_in: # Load waypoints file in
+        for line in file_in:
+            floats = [float(x) for x in line.split(',')]
+            waypoints.append(Waypoint([floats[0],floats[1],floats[2]], [floats[3],floats[4],floats[5]]))
+            print(floats)
+            
+    env = gym.make(args.env)
+    return env, waypoints, args
+
+env, waypoints, args = ParseArgs()
+if not args.nogui:
+    env.render()
 
 for rollout in range(10):
 
@@ -18,17 +37,14 @@ for rollout in range(10):
     x, theta = p.getLinkState(env.robot, 8, computeForwardKinematics=True)[:2] # Get the position and orientation of the end effector
     old_wpt_theta = theta
     
-    waypoints = []
-    waypoints.append(Waypoint([0.0, -0.12, 0.04], [np.pi/2, np.pi/2, np.pi/2]))
-    waypoints.append(Waypoint([0, -0.13, 0.07], [np.pi/2, np.pi + 0.1, np.pi/2]))
-
     wpt_idx = 0
 
     observation, reward, done, info = env.step(np.zeros(7))
     total_reward = 0
 
     while not done:
-        env.render()
+        if not args.nogui:
+            env.render()
         
         x, theta = p.getLinkState(env.robot, 8, computeForwardKinematics=True)[:2] # Get the position and orientation of the end effector
         delta_tool_goal = observation[7:10]
