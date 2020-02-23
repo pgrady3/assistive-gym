@@ -45,7 +45,10 @@ for key in joint_idxes:
         tool_idx = tool_idxes[key]
         initial_euler = initial_eulers[key]
 
-for rollout in range(10):
+cum_reward = 0
+iters = 100
+
+for rollout in range(iters):
     observation = env.reset()
     x, theta = p.getLinkState(env.robot, tool_idx, computeForwardKinematics=True)[:2] # Get the position and orientation of the end effector
     #env.world_creation.print_joint_info(env.robot, show_fixed=False)
@@ -116,4 +119,8 @@ for rollout in range(10):
             print("{:.3f},{:.3f},{:.3f},{:.3f},{:.3f},{:.3f}".format(wpt_x[0], wpt_x[1], wpt_x[2], target_euler[0], target_euler[1], target_euler[2]))
 
 
-    print('Total episode reward:', total_reward)
+    print('Episode', rollout+1, 'reward:', total_reward)
+    cum_reward += total_reward
+
+avg_reward = cum_reward/iters
+print('Average reward per', iters, 'trials:', avg_reward)
